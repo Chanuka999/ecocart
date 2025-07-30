@@ -1,6 +1,8 @@
-import { Route } from "react-router-dom";
-import AuthLayout from "./pages/auth/register";
+import { Route, Routes } from "react-router-dom";
+
 import AuthRegister from "./pages/auth/register";
+import AuthLogin from "./pages/auth/login";
+import AuthLayout from "./components/auth/layout";
 
 function App() {
   return (
