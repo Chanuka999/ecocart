@@ -15,13 +15,23 @@ const CommonForm = ({ formControls, formData, setFormData, onSubmit }) => {
             id={getControllItem.name}
             type={getControllItem.type}
             typeof={value}
-            onChange={(event) => setFormData({})}
+            onChange={(event) =>
+              setFormData({
+                ...formData,
+                [getControllItem.name]: event.target.value,
+              })
+            }
           />
         );
         break;
       case "select":
         element = (
-          <Select value={value}>
+          <Select
+            onValueChange={(value) =>
+              setFormData({ ...formData, [getControllItem.name]: value })
+            }
+            value={value}
+          >
             <SelectTrigger className="w-full">
               <SelectValue placeholder={getControllItem.placeholder} />
             </SelectTrigger>
@@ -45,6 +55,12 @@ const CommonForm = ({ formControls, formData, setFormData, onSubmit }) => {
             placeholder={getControllItem.placeholder}
             id={getControllItem.id}
             value={value}
+            onChange={(event) =>
+              setFormData({
+                ...formData,
+                [getControllItem.name]: event.target.value,
+              })
+            }
           />
         );
         break;
@@ -56,6 +72,13 @@ const CommonForm = ({ formControls, formData, setFormData, onSubmit }) => {
             placeholder={getControllItem.placeholder}
             id={getControllItem.name}
             type={getControllItem.type}
+            typeof={value}
+            onChange={(event) =>
+              setFormData({
+                ...formData,
+                [getControllItem.name]: event.target.value,
+              })
+            }
           />
         );
     }
