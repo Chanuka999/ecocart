@@ -15,6 +15,7 @@ export const registerUser = createAsyncThunk(
       FormData,
       { withCredentials: true }
     );
+    return response.data;
   }
 );
 
@@ -22,16 +23,12 @@ const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    // Add your auth actions here as needed
-    // Example:
-    // setUser: (state, action) => {
-    //   state.user = action.payload;
-    //   state.isAuthanticated = true;
-    // },
-    // logout: (state) => {
-    //   state.user = null;
-    //   state.isAuthanticated = false;
-    // }
+    setUser: (state, action) => {
+      state.user = action.payload;
+    },
+  },
+  extraReducers: (builder) => {
+    builder.addCase(registerUser);
   },
 });
 
