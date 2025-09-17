@@ -1,7 +1,13 @@
 import { Button } from "../ui/button";
 import { Textarea } from "../ui/textarea";
 
-const CommonForm = ({ formControls, formData, setFormData, onSubmit }) => {
+const CommonForm = ({
+  formControls,
+  formData,
+  setFormData,
+  onSubmit,
+  buttonText,
+}) => {
   function renderInputByComponentType(getControllItem) {
     let element = null;
     const value = formData;
@@ -85,16 +91,21 @@ const CommonForm = ({ formControls, formData, setFormData, onSubmit }) => {
     return element;
   }
   return (
-    <form>
-      <div className="flex flex-ol gap-3">
+    <form className="bg-white shadow-lg rounded-2xl p-6 space-y-6">
+      <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
         {formControls.map((controlItem) => (
-          <div className="grid w-full" key={controlItem.name}>
-            <label className="mb-1">{controlItem.label}</label>
+          <div className="flex flex-col w-full" key={controlItem.name}>
+            <label className="mb-2 text-sm font-medium text-gray-700">
+              {controlItem.label}
+            </label>
             {renderInputByComponentType(controlItem)}
           </div>
         ))}
       </div>
-      <Button type="submit" className="mt-2 w-full">
+      <Button
+        type="submit"
+        className="mt-4 w-full rounded-xl bg-blue-600 text-white font-semibold py-3 hover:bg-blue-700 transition duration-300"
+      >
         {buttonText || "submit"}
       </Button>
     </form>
