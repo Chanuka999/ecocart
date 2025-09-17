@@ -1,10 +1,22 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import axios from "axios";
 
 const initialState = {
   isAuthanticated: false,
   isLoading: false,
   user: null,
 };
+
+export const registerUser = createAsyncThunk(
+  "/auth/register",
+  async (FormData) => {
+    const response = await axios.post(
+      "http://localhost:5000/api/auth/register",
+      FormData,
+      { withCredentials: true }
+    );
+  }
+);
 
 const authSlice = createSlice({
   name: "auth",
