@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
 require("dotenv").config();
+import authRouter from "./routes/auth/auth-routes";
 
 // Enhanced MongoDB connection with better error handling
 const connectDB = async () => {
@@ -59,5 +60,6 @@ app.use(
 
 app.use(cookieParser());
 app.use(express.json());
+app.use("api/auth", authRouter);
 
 app.listen(PORT, () => console.log(`server is running on port ${PORT}`));
