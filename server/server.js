@@ -1,9 +1,10 @@
-const express = require("express");
-const mongoose = require("mongoose");
-const cookieParser = require("cookie-parser");
-const cors = require("cors");
-require("dotenv").config();
-import authRouter from "./routes/auth/auth-routes";
+import express from "express";
+import mongoose from "mongoose";
+import cookieParser from "cookie-parser";
+import cors from "cors";
+import dotenv from "dotenv";
+import authRouter from "./routes/auth/auth-routes.js";
+dotenv.config();
 
 // Enhanced MongoDB connection with better error handling
 const connectDB = async () => {
@@ -60,6 +61,6 @@ app.use(
 
 app.use(cookieParser());
 app.use(express.json());
-app.use("api/auth", authRouter);
+app.use("/api/auth", authRouter);
 
 app.listen(PORT, () => console.log(`server is running on port ${PORT}`));
