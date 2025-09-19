@@ -91,7 +91,10 @@ const CommonForm = ({
     return element;
   }
   return (
-    <form className="bg-white shadow-lg rounded-2xl p-6 space-y-6">
+    <form
+      className="bg-white shadow-lg rounded-2xl p-6 space-y-6"
+      onSubmit={onSubmit}
+    >
       <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
         {formControls.map((controlItem) => (
           <div className="flex flex-col w-full" key={controlItem.name}>
