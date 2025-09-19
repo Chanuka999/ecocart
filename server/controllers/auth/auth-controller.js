@@ -7,7 +7,15 @@ const registerUser = async (req, res) => {
   const { userName, email, password } = req.body;
 
   try {
-    const hashpassword = bcrypt.hash(password, 12);
+    const checkUser = await User.findOne({ email });
+    if (checkUser) {
+      return res.json({
+        success: false,
+        message: "Üser already exits with the same email please",
+      });
+    }
+    const hashpassword = await bcrypt.hash(password, 12);
+
     const newUser = new User({
       userName,
       email,
@@ -19,8 +27,15 @@ const registerUser = async (req, res) => {
       .status(200)
       .json({ success: true, message: "Registration successfull" });
   } catch (error) {
-    console.log(error);
-    res.status(500).json({ success: false, message: "Some error occured" });
+    console.error("Registration error:", error);
+    let message = "Some error occured";
+    if (error.code === 11000) {
+      // Duplicate key error
+      message = `Duplicate field: ${Object.keys(error.keyValue).join(", ")}`;
+    } else if (error.message) {
+      message = error.message;
+    }
+    res.status(500).json({ success: false, message });
   }
 };
 
