@@ -1,10 +1,10 @@
-import { useDispatch } from "react-redux";
 import CommonForm from "../../components/common/form";
+import { useToast } from "../../components/ui/use-toast";
 import { registerFormControls } from "../../config";
+import { registerUser } from "../../../store/auth-slice";
 import { useState } from "react";
+import { useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
-import { registerUser } from "../../../store/auth-slice/index.js";
-import { useToast } from "../../hooks/useToastHook.js";
 
 const initialState = {
   userName: "",
@@ -12,13 +12,13 @@ const initialState = {
   password: "",
 };
 
-const AuthRegister = () => {
+function AuthRegister() {
   const [formData, setFormData] = useState(initialState);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  const onSubmit = async (event) => {
+  function onSubmit(event) {
     event.preventDefault();
     dispatch(registerUser(formData)).then((data) => {
       if (data?.payload?.success) {
@@ -29,19 +29,19 @@ const AuthRegister = () => {
       } else {
         toast({
           title: data?.payload?.message,
-          variant: "description",
+          variant: "destructive",
         });
       }
     });
-  };
+  }
 
   console.log(formData);
 
   return (
     <div className="mx-auto w-full max-w-md space-y-6">
-      <div className="text-account">
+      <div className="text-center">
         <h1 className="text-3xl font-bold tracking-tight text-foreground">
-          create new account
+          Create new account
         </h1>
         <p className="mt-2">
           Already have an account
@@ -62,6 +62,6 @@ const AuthRegister = () => {
       />
     </div>
   );
-};
+}
 
 export default AuthRegister;
