@@ -2,12 +2,17 @@ import {
   ChartNoAxesCombined,
   CircleStop,
   LayoutDashboard,
-  Sheet,
   ShoppingBasket,
 } from "lucide-react";
 import React, { Fragment } from "react";
 import { useNavigate } from "react-router-dom";
-import { SheetContent, SheetHeader, SheetTitle } from "../ui/sheet";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetDescription,
+} from "../ui/sheet";
 
 const adminSidebarMenuItems = [
   {
@@ -30,14 +35,17 @@ const adminSidebarMenuItems = [
   },
 ];
 
-const MenuItems = () => {
+const MenuItems = ({ setOpen }) => {
   const navigate = useNavigate();
   return (
     <nav className="mt-8 flex-col flex gap-8">
       {adminSidebarMenuItems.map((menuItem) => (
         <div
           key={menuItem.id}
-          onClick={() => navigate(menuItem.path)}
+          onClick={() => {
+            navigate(menuItem.path);
+            setOpen ? setOpen(false) : null;
+          }}
           className="flex cursor-pointer text-3xl items-center gap-2 rounded-md px-3 py-2 text-muted-foreground hover:bg-muted hover:text-foreground"
         >
           {menuItem.icons}
@@ -48,7 +56,7 @@ const MenuItems = () => {
   );
 };
 
-const AdminSideBar = (open, setOpen) => {
+const AdminSideBar = ({ open, setOpen }) => {
   const navigate = useNavigate();
   return (
     <Fragment>
@@ -56,12 +64,16 @@ const AdminSideBar = (open, setOpen) => {
         <SheetContent side="left" className="w-64">
           <div className="flex flex-col h-full">
             <SheetHeader className="border-b">
-              <SheetTitle>
+              <SheetTitle className="flex gap-2 mt-5 mb-5">
                 <ChartNoAxesCombined size={30} />
-                Admin panel
+                <span>Admin panel</span>
               </SheetTitle>
+              <SheetDescription>
+                Navigate through the admin dashboard to manage your ecommerce
+                store.
+              </SheetDescription>
             </SheetHeader>
-            <MenuItems />
+            <MenuItems setOpen={setOpen} />
           </div>
         </SheetContent>
       </Sheet>
