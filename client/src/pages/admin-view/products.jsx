@@ -53,8 +53,8 @@ const AdminProducts = () => {
             </SheetDescription>
           </SheetHeader>
           <ProductImageUpload
-            file={imageFile}
-            setFile={setImageFile}
+            imageFile={imageFile}
+            setImageFile={setImageFile}
             uploadImageUrl={uploadImageUrl}
             setUploadImageUrl={setUploadImageUrl}
           />
