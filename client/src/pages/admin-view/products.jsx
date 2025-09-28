@@ -29,6 +29,7 @@ const AdminProducts = () => {
   const [formData, setFormData] = useState(initialFormData);
   const [imageFile, setImageFile] = useState(null);
   const [uploadImageUrl, setUploadImageUrl] = useState("");
+  const [imageLoadingState, setImageLoadingState] = useState(false);
 
   function onSubmit() {}
   return (
@@ -57,6 +58,7 @@ const AdminProducts = () => {
             setImageFile={setImageFile}
             uploadImageUrl={uploadImageUrl}
             setUploadImageUrl={setUploadImageUrl}
+            setImageLoadingState={setImageLoadingState}
           />
           <div className="py-6">
             <CommonForm

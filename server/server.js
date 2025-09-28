@@ -4,6 +4,8 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import dotenv from "dotenv";
 import authRouter from "./routes/auth/auth-routes.js";
+import adminProductsRouter from "./routes/admin/products-route.js";
+
 dotenv.config();
 
 // Enhanced MongoDB connection with better error handling
@@ -62,5 +64,6 @@ app.use(
 app.use(cookieParser());
 app.use(express.json());
 app.use("/api/auth", authRouter);
+app.use("/api/admin/products", adminProductsRouter);
 
 app.listen(PORT, () => console.log(`server is running on port ${PORT}`));
