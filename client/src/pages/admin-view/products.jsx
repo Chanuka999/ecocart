@@ -13,6 +13,8 @@ import ProductImageUpload from "../../components/admin-view/image-upload";
 import { useDispatch, useSelector } from "react-redux";
 import {
   addNewProduct,
+  deleteProduct,
+  editProduct,
   fetchProduct,
 } from "../../../store/admin/product-slice";
 import { useToast } from "../../hooks/useToastHook";
@@ -44,24 +46,55 @@ const AdminProducts = () => {
 
   function onSubmit(event) {
     event.preventDefault();
-    dispatch(
-      addNewProduct({
-        ...formData,
-        image: uploadImageUrl,
-      })
-    ).then((data) => {
-      if (data?.payload?.success) {
-        setFormData(initialFormData);
-        setImageFile(null);
-        setUploadImageUrl("");
-        setOpenCreateProductsDialog(false);
-        dispatch(fetchProduct());
-        toast({
-          title: "product add successfully",
+
+    currentEditedId !== null
+      ? dispatch(
+          editProduct({
+            id: currentEditedId,
+            formData,
+          })
+        ).then((data) => {
+          console.log(data, "edit");
+
+          if (data?.payload?.success) {
+            dispatch(fetchProduct());
+            setFormData(initialFormData);
+            setOpenCreateProductsDialog(false);
+            setCurrentEditedId(null);
+          }
+        })
+      : dispatch(
+          addNewProduct({
+            ...formData,
+            image: uploadImageUrl,
+          })
+        ).then((data) => {
+          if (data?.payload?.success) {
+            setFormData(initialFormData);
+            setImageFile(null);
+            setUploadImageUrl("");
+            setOpenCreateProductsDialog(false);
+            dispatch(fetchProduct());
+            toast({
+              title: "product add successfully",
+            });
+          }
+          console.log(data);
         });
+  }
+
+  const handleDelete = (getCurrentProductId) => {
+    dispatch(deleteProduct(getCurrentProductId)).then((data) => {
+      if (data?.payload?.success) {
+        dispatch(fetchProduct());
       }
-      console.log(data);
     });
+  };
+
+  function isFormValid() {
+    return Object.keys(formData)
+      .map((key) => formData[key] !== "")
+      .every((item) => item);
   }
 
   useEffect(() => {
@@ -74,16 +107,19 @@ const AdminProducts = () => {
     <Fragment>
       <div className="mb-5 w-full flex justify-end">
         <Button onClick={() => setOpenCreateProductsDialog(true)}>
-          Add New Product
+          {currentEditedId !== null ? "Edit Product" : "Add new product"}
         </Button>
       </div>
       <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-4">
         {productList && productList.length > 0
           ? productList.map((productItem) => (
               <AdminProductTile
+                key={productItem._id}
                 setFormData={setFormData}
                 setCurrentEditedId={setCurrentEditedId}
+                setOpenCreateProductsDialog={setOpenCreateProductsDialog}
                 product={productItem}
+                handleDelete={handleDelete}
               />
             ))
           : null}
@@ -92,6 +128,8 @@ const AdminProducts = () => {
         open={openCreateProductsDialog}
         onOpenChange={() => {
           setOpenCreateProductsDialog(false);
+          setCurrentEditedId(null);
+          setFormData(initialFormData);
         }}
       >
         <SheetContent side="right" className="overflow-auto">
@@ -108,6 +146,7 @@ const AdminProducts = () => {
             setUploadedImageUrl={setUploadImageUrl}
             setImageLoadingState={setImageLoadingState}
             imageLoadingState={imageLoadingState}
+            isEditMode={currentEditedId !== null}
           />
           <div className="py-6">
             <CommonForm
@@ -115,7 +154,8 @@ const AdminProducts = () => {
               formData={formData}
               setFormData={setFormData}
               formControls={addProductFormElements}
-              buttonText="add"
+              buttonText={currentEditedId !== null ? "Edit" : "Add"}
+              isBtnDisabled={!isFormValid()}
             />
           </div>
         </SheetContent>
