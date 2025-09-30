@@ -5,6 +5,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import authRouter from "./routes/auth/auth-routes.js";
 import adminProductsRouter from "./routes/admin/products-route.js";
+import shopProductRouter from "./routes/shop/products-routes.js";
 
 dotenv.config();
 
@@ -65,5 +66,6 @@ app.use(cookieParser());
 app.use(express.json());
 app.use("/api/auth", authRouter);
 app.use("/api/admin/products", adminProductsRouter);
+app.use("/api/shop/products", shopProductRouter);
 
 app.listen(PORT, () => console.log(`server is running on port ${PORT}`));
