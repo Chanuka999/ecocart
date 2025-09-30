@@ -6,12 +6,20 @@ import {
   DropdownMenuTrigger,
 } from "../../components/ui/dropdown-menu";
 import ProductFilter from "../../components/shopping-view/filter";
-import React from "react";
+import React, { useEffect } from "react";
 import { Button } from "../../components/ui/button";
 import { ArrowUpDownIcon } from "lucide-react";
 import { sortOptions } from "../../config";
+import { useDispatch } from "react-redux";
+import { fetchAllFilterdProducts } from "store/shop/product-slice";
 
 const ShoppingListing = () => {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(fetchAllFilterdProducts());
+  }, [dispatch]);
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-[300px_1fr] sm:grid-cols-[150px_1fr] gap-6 p-4 md:p-6">
       <ProductFilter />
