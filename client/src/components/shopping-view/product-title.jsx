@@ -1,6 +1,7 @@
 import React from "react";
-import { Card, CardContent } from "../ui/card";
+import { Card, CardContent, CardFooter } from "../ui/card";
 import { Badge } from "lucide-react";
+import { Button } from "../ui/button";
 
 const ShoppingProductTitle = ({ product }) => {
   return (
@@ -19,7 +20,33 @@ const ShoppingProductTitle = ({ product }) => {
           ) : null}
         </div>
         <CardContent className="p-4">
-            <h2>{product?.title}</h2>
+          <h2 className="text-xl font-bold mb-2">{product?.title}</h2>
+          <div className="flex justify-between items-center mb-2">
+            <span className="text-sm text-muted-foreground">
+              {product?.category}
+            </span>
+            <span className="text-sm text-muted-foreground">
+              {product?.brand}
+            </span>
+          </div>
+          <div className="flex justify-between items-center mb-2">
+            <span
+              className={`${
+                product?.salePrice > 0 ? "line-through" : ""
+              }text-lg font-semibold text-primary`}
+            >
+              {product?.category}
+            </span>
+            {product?.salePrice > 0 ? (
+              <span className="text-lg font-semibold text-primary">
+                {product?.salePrice}
+              </span>
+            ) : null}
+          </div>
+        </CardContent>
+        <CardFooter>
+          <Button className="w-full">Add to cart</Button>
+        </CardFooter>
       </div>
     </Card>
   );
