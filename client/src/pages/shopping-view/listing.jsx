@@ -16,7 +16,7 @@ import ShoppingProductTile from "../../components/shopping-view/product-tile";
 import { createSearchParams, useSearchParams } from "react-router-dom";
 import { fetchProductDetails } from "../../../store/shopping-slice";
 import ProductDetailsDialog from "../../components/shopping-view/product-details";
-import { addToCart } from "../../../store/shop/cart-slice";
+import { addToCart, fetchToCart } from "../../../store/shop/cart-slice";
 
 const createSearchParamsHelper = (filterParams) => {
   const queryParams = [];
@@ -39,7 +39,7 @@ const ShoppingListing = () => {
   const { productList, productDetails } = useSelector(
     (state) => state.shopProducts
   );
-  const { carItems } = useSelector((state) => state.shopCart);
+
   const { user } = useSelector((state) => state.auth);
   const [openDetailsDialog, setOpenDetailsDialog] = useState(
     FileChartColumnIncreasing
@@ -86,7 +86,7 @@ const ShoppingListing = () => {
       })
     ).then((data) => {
       if (data?.payload?.success) {
-        dispatch(fetchCartItems(user?.id));
+        dispatch(fetchToCart(user?.id));
       }
     });
   };
@@ -113,8 +113,6 @@ const ShoppingListing = () => {
   useEffect(() => {
     if (productDetails !== null) setOpenDetailsDialog(true);
   }, [productDetails]);
-
-  console.log(carItems, "carItemscartItems");
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-[200px_1fr] sm:grid-cols-[150px_1fr] gap-6 p-4 md:p-6">
