@@ -11,7 +11,7 @@ const getFilteredProducts = async (req, res) => {
     }
 
     if (brand.length) {
-      filter.category = { $in: category.split(",") };
+      filter.brand = { $in: brand.split(",") };
     }
 
     let sort = {};
@@ -47,4 +47,24 @@ const getFilteredProducts = async (req, res) => {
   }
 };
 
-export default getFilteredProducts;
+const getProductDetails = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const product = await Product.findById(id);
+
+    if (!product)
+      return res
+        .status(404)
+        .json({ success: false, message: "product not found" });
+
+    res.status(200).json({ success: true, data: product });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Some error occured",
+    });
+  }
+};
+
+export { getFilteredProducts, getProductDetails };
