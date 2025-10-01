@@ -6,6 +6,7 @@ import dotenv from "dotenv";
 import authRouter from "./routes/auth/auth-routes.js";
 import adminProductsRouter from "./routes/admin/products-route.js";
 import shopProductRouter from "./routes/shop/products-routes.js";
+import shopCartRouter from "./routes/shop/cart-routes.js";
 
 dotenv.config();
 
@@ -67,5 +68,6 @@ app.use(express.json());
 app.use("/api/auth", authRouter);
 app.use("/api/admin/products", adminProductsRouter);
 app.use("/api/shop/products", shopProductRouter);
+app.use("/api/shop/cart", shopCartRouter);
 
 app.listen(PORT, () => console.log(`server is running on port ${PORT}`));
