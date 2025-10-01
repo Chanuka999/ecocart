@@ -52,10 +52,41 @@ const addProduct = async (req, res) => {
 };
 
 //fetch
-
 const fetchProduct = async (req, res) => {
   try {
-    const listOfProduct = await Product.find({});
+    const { category, brand, sortBy } = req.query;
+
+    let filters = {};
+
+    if (category && category.trim() !== "") {
+      filters.category = { $in: category.split(",") };
+    }
+
+    if (brand && brand.trim() !== "") {
+      filters.brand = { $in: brand.split(",") };
+    }
+
+    let sort = {};
+
+    switch (sortBy) {
+      case "price-lowtohigh":
+        sort.price = 1;
+        break;
+      case "price-hightolow":
+        sort.price = -1;
+        break;
+      case "title-atoz":
+        sort.title = 1;
+        break;
+      case "title-ztoa":
+        sort.title = -1;
+        break;
+      default:
+        sort.price = 1;
+        break;
+    }
+
+    const listOfProduct = await Product.find(filters).sort(sort);
     res.status(200).json({ success: true, data: listOfProduct });
   } catch (error) {
     console.log(error);
