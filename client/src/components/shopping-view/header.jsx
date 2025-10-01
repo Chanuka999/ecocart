@@ -22,7 +22,8 @@ import {
 import { Avatar, AvatarFallback } from "../ui/avatar";
 import { logoutUser } from "../../../store/auth-slice";
 import UserCartWrapper from "./cart-wrapper";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { fetchToCart } from "../../../store/shop/cart-slice";
 
 const MenuItem = () => {
   return (
@@ -45,10 +46,18 @@ const HeaderRightContent = () => {
   const [openCartSheet, setOpenCartSheet] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { cartItems } = useSelector((state) => state.shopCart);
 
   const handleLogout = () => {
     dispatch(logoutUser());
   };
+
+  useEffect(() => {
+    dispatch(fetchToCart(user?.id));
+  }, [dispatch]);
+
+  console.log(cartItems, "chanuka");
+
   return (
     <div className="flex lg:items-center lg:flex-row flex-col gap-4">
       <Sheet open={openCartSheet} onOpenChange={() => setOpenCartSheet(false)}>
@@ -60,7 +69,7 @@ const HeaderRightContent = () => {
           <ShoppingCart className="w-6 h-6" />
           <span className="sr-only">User cart</span>
         </Button>
-        <UserCartWrapper />
+        <UserCartWrapper cartItems={cartItems} />
       </Sheet>
 
       <DropdownMenu>
