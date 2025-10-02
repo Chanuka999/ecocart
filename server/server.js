@@ -3,10 +3,18 @@ import mongoose from "mongoose";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import dotenv from "dotenv";
+
+// Import models to register them
+import "./models/User.js";
+import "./models/Product.js";
+import "./models/Cart.js";
+import "./models/Review.js";
+
 import authRouter from "./routes/auth/auth-routes.js";
 import adminProductsRouter from "./routes/admin/products-route.js";
 import shopProductRouter from "./routes/shop/products-routes.js";
 import shopCartRouter from "./routes/shop/cart-routes.js";
+import shopReviewRouter from "./routes/shop/review-routes.js";
 
 dotenv.config();
 
@@ -69,5 +77,6 @@ app.use("/api/auth", authRouter);
 app.use("/api/admin/products", adminProductsRouter);
 app.use("/api/shop/products", shopProductRouter);
 app.use("/api/shop/cart", shopCartRouter);
+app.use("/api/shop/review", shopReviewRouter);
 
 app.listen(PORT, () => console.log(`server is running on port ${PORT}`));

@@ -37,10 +37,14 @@ export const fetchProductDetails = createAsyncThunk(
 const shoppingProductSlice = createSlice({
   name: "shoppingProducts",
   initialState,
-  reducers: {},
+  reducers: {
+    clearProductDetails: (state) => {
+      state.productDetails = null;
+    },
+  },
   extraReducers: (builder) => {
     builder
-      .addCase(fetchAllFilterdProducts.pending, (state, action) => {
+      .addCase(fetchAllFilterdProducts.pending, (state) => {
         state.isLoading = true;
       })
       .addCase(fetchAllFilterdProducts.fulfilled, (state, action) => {
@@ -49,22 +53,24 @@ const shoppingProductSlice = createSlice({
         state.isLoading = false;
         state.productList = action.payload.data;
       })
-      .addCase(fetchAllFilterdProducts.rejected, (state, action) => {
+      .addCase(fetchAllFilterdProducts.rejected, (state) => {
         state.isLoading = false;
         state.productList = [];
       })
-      .addCase(fetchProductDetails.pending, (state, action) => {
+      .addCase(fetchProductDetails.pending, (state) => {
         state.isLoading = true;
       })
       .addCase(fetchProductDetails.fulfilled, (state, action) => {
         state.isLoading = false;
         state.productDetails = action.payload.data;
       })
-      .addCase(fetchProductDetails.rejected, (state, action) => {
+      .addCase(fetchProductDetails.rejected, (state) => {
         state.isLoading = false;
-        state.productList = null;
+        state.productDetails = null;
       });
   },
 });
+
+export const { setProductDetails } = shoppingProductSlice.actions;
 
 export default shoppingProductSlice.reducer;
