@@ -1,11 +1,11 @@
 import express from "express";
 
-const {
+import {
   addAddress,
   fetchAllAddress,
   editAddress,
   deleteAddress,
-} = require("../../controllers/shop/address-controller");
+} from "../../controllers/shop/address-controller.js";
 
 const router = express.Router();
 
