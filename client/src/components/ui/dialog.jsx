@@ -48,4 +48,13 @@ const DialogContent = React.forwardRef(
 );
 DialogContent.displayName = "DialogContent";
 
-export { Dialog, DialogContent };
+const DialogDescription = React.forwardRef(({ className, ...props }, ref) => (
+  <p
+    ref={ref}
+    className={`text-sm text-muted-foreground ${className}`}
+    {...props}
+  />
+));
+DialogDescription.displayName = "DialogDescription";
+
+export { Dialog, DialogContent, DialogDescription };
