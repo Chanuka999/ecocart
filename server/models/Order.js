@@ -8,7 +8,8 @@ const OrderSchema = new mongoose.Schema({
       title: String,
       image: String,
       price: String,
-      salePrice: String,
+
+      quantity: Number,
     },
   ],
   addressInfo: {
@@ -19,4 +20,16 @@ const OrderSchema = new mongoose.Schema({
     phone: String,
     notes: String,
   },
+  orderStatus: String,
+  paymentMethod: String,
+  paymentStatus: String,
+  totalAmount: Number,
+  orderDate: Date,
+  orderUpdateDate: Date,
+  paymentId: String,
+  payerId: String,
 });
+
+const Order = mongoose.model("Order", OrderSchema);
+
+export default Order;

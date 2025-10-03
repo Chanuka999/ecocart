@@ -12,6 +12,7 @@
   "author": "chanuka randitha",
   "license": "ISC",
   "dependencies": {
+    "@types/paypal-rest-sdk": "^1.7.9",
     "bcryptjs": "^3.0.2",
     "cloudinary": "^2.7.0",
     "cookie-parser": "^1.4.7",
