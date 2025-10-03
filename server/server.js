@@ -9,13 +9,14 @@ import "./models/User.js";
 import "./models/Product.js";
 import "./models/Cart.js";
 import "./models/Review.js";
+import "./models/Address.js";
 
 import authRouter from "./routes/auth/auth-routes.js";
 import adminProductsRouter from "./routes/admin/products-route.js";
 import shopProductRouter from "./routes/shop/products-routes.js";
 import shopCartRouter from "./routes/shop/cart-routes.js";
 import shopReviewRouter from "./routes/shop/review-routes.js";
-import shopReviewRouter from "./routes/shop/review-routes.js";
+
 import shopAddressRouter from "./routes/shop/address-routes.js";
 
 dotenv.config();
