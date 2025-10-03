@@ -9,7 +9,7 @@ import {
   ChevronRightIcon,
   CloudLightning,
   Heater,
-  Images,
+  Image,
   Shirt,
   ShirtIcon,
   ShoppingBasket,
@@ -21,12 +21,12 @@ import { Card, CardContent } from "../../components/ui/card";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  fetchAllFilteredProducts,
+  fetchAllFilterdProducts,
   fetchProductDetails,
 } from "../../../store/shop/product-slice/index.js";
 import ShoppingProductTile from "../../components/shopping-view/product-tile";
 import { useNavigate } from "react-router-dom";
-import { addToCart, fetchCartItems } from "../../../store/shop/cart-slice";
+import { addToCart, fetchToCart } from "../../../store/shop/cart-slice";
 import { useToast } from "../../components/ui/use-toast";
 import ProductDetailsDialog from "../../components/shopping-view/product-details";
 //import { getFeatureImages } from "../../../store/common-slice";
@@ -44,7 +44,7 @@ const brandsWithIcon = [
   { id: "adidas", label: "Adidas", icon: WashingMachine },
   { id: "puma", label: "Puma", icon: ShoppingBasket },
   { id: "levi", label: "Levi's", icon: Airplay },
-  { id: "zara", label: "Zara", icon: Images },
+  { id: "zara", label: "Zara", icon: Image },
   { id: "h&m", label: "H&M", icon: Heater },
 ];
 function ShoppingHome() {
@@ -52,7 +52,8 @@ function ShoppingHome() {
   const { productList, productDetails } = useSelector(
     (state) => state.shopProducts
   );
-  const { featureImageList } = useSelector((state) => state.commonFeature);
+
+  const slides = [bannerOne, bannerTwo, bannerThree];
 
   const [openDetailsDialog, setOpenDetailsDialog] = useState(false);
 
@@ -85,7 +86,7 @@ function ShoppingHome() {
       })
     ).then((data) => {
       if (data?.payload?.success) {
-        dispatch(fetchCartItems(user?.id));
+        dispatch(fetchToCart(user?.id));
         toast({
           title: "Product is added to cart",
         });
@@ -99,15 +100,15 @@ function ShoppingHome() {
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setCurrentSlide((prevSlide) => (prevSlide + 1) % featureImageList.length);
+      setCurrentSlide((prevSlide) => (prevSlide + 1) % slides.length);
     }, 15000);
 
     return () => clearInterval(timer);
-  }, [featureImageList]);
+  }, [slides.length]);
 
   useEffect(() => {
     dispatch(
-      fetchAllFilteredProducts({
+      fetchAllFilterdProducts({
         filterParams: {},
         sortParams: "price-lowtohigh",
       })
@@ -116,18 +117,15 @@ function ShoppingHome() {
 
   console.log(productList, "productList");
 
-  useEffect(() => {
-    dispatch(getFeatureImages());
-  }, [dispatch]);
-
   return (
     <div className="flex flex-col min-h-screen">
       <div className="relative w-full h-[600px] overflow-hidden">
-        {featureImageList && featureImageList.length > 0
-          ? featureImageList.map((slide, index) => (
+        {slides && slides.length > 0
+          ? slides.map((slide, index) => (
               <img
-                src={slide?.image}
+                src={slide}
                 key={index}
+                alt={`Slide ${index + 1}`}
                 className={`${
                   index === currentSlide ? "opacity-100" : "opacity-0"
                 } absolute top-0 left-0 w-full h-full object-cover transition-opacity duration-1000`}
@@ -139,9 +137,7 @@ function ShoppingHome() {
           size="icon"
           onClick={() =>
             setCurrentSlide(
-              (prevSlide) =>
-                (prevSlide - 1 + featureImageList.length) %
-                featureImageList.length
+              (prevSlide) => (prevSlide - 1 + slides.length) % slides.length
             )
           }
           className="absolute top-1/2 left-4 transform -translate-y-1/2 bg-white/80"
@@ -152,9 +148,7 @@ function ShoppingHome() {
           variant="outline"
           size="icon"
           onClick={() =>
-            setCurrentSlide(
-              (prevSlide) => (prevSlide + 1) % featureImageList.length
-            )
+            setCurrentSlide((prevSlide) => (prevSlide + 1) % slides.length)
           }
           className="absolute top-1/2 right-4 transform -translate-y-1/2 bg-white/80"
         >
