@@ -10,6 +10,7 @@ import "./models/Product.js";
 import "./models/Cart.js";
 import "./models/Review.js";
 import "./models/Address.js";
+import "./models/Order.js";
 
 import authRouter from "./routes/auth/auth-routes.js";
 import adminProductsRouter from "./routes/admin/products-route.js";
