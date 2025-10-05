@@ -35,6 +35,15 @@ const Dialog = React.forwardRef(({ open, onOpenChange, children }, ref) => {
 });
 Dialog.displayName = "Dialog";
 
+const DialogTrigger = React.forwardRef(
+  ({ className, children, ...props }, ref) => (
+    <div ref={ref} className={className} {...props}>
+      {children}
+    </div>
+  )
+);
+DialogTrigger.displayName = "DialogTrigger";
+
 const DialogContent = React.forwardRef(
   ({ className, children, ...props }, ref) => (
     <div
@@ -57,4 +66,4 @@ const DialogDescription = React.forwardRef(({ className, ...props }, ref) => (
 ));
 DialogDescription.displayName = "DialogDescription";
 
-export { Dialog, DialogContent, DialogDescription };
+export { Dialog, DialogTrigger, DialogContent, DialogDescription };

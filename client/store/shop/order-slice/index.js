@@ -11,13 +11,46 @@ const initialState = {
 
 export const createNewOrder = createAsyncThunk(
   "/order/createNewOrder",
-  async (orderData) => {
-    const response = await axios.post(
-      "http://localhost:5000/api/shop/order/create",
-      orderData
-    );
+  async (orderData, { rejectWithValue }) => {
+    try {
+      console.log("🚀 Attempting to create order with data:", orderData);
 
-    return response.data;
+      const response = await axios.post(
+        "http://localhost:5000/api/shop/order/create",
+        orderData
+      );
+
+      console.log("✅ Order creation successful:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("❌ Order creation error:", error);
+
+      // Handle different types of errors
+      if (error.code === "ECONNREFUSED" || error.code === "ERR_NETWORK") {
+        return rejectWithValue({
+          message:
+            "Cannot connect to server. Please ensure the server is running on port 5000.",
+          status: "NETWORK_ERROR",
+          data: null,
+        });
+      }
+
+      if (error.response) {
+        // Server responded with error status
+        return rejectWithValue({
+          message: error.response.data?.message || "Server error occurred",
+          status: error.response.status,
+          data: error.response.data,
+        });
+      }
+
+      // Network error or other issues
+      return rejectWithValue({
+        message: error.message || "Order creation failed",
+        status: "UNKNOWN_ERROR",
+        data: null,
+      });
+    }
   }
 );
 
@@ -66,6 +99,10 @@ const shoppingOrderSlice = createSlice({
     resetOrderDetails: (state) => {
       state.orderDetails = null;
     },
+    clearApprovalURL: (state) => {
+      state.approvalURL = null;
+      state.orderId = null;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -76,6 +113,10 @@ const shoppingOrderSlice = createSlice({
         state.isLoading = false;
         state.approvalURL = action.payload.approvalURL;
         state.orderId = action.payload.orderId;
+        sessionStorage.setItem(
+          "currentOrderId",
+          JSON.stringify(action.payload.orderId)
+        );
       })
       .addCase(createNewOrder.rejected, (state) => {
         state.isLoading = false;
@@ -107,6 +148,7 @@ const shoppingOrderSlice = createSlice({
   },
 });
 
-export const { resetOrderDetails } = shoppingOrderSlice.actions;
+export const { resetOrderDetails, clearApprovalURL } =
+  shoppingOrderSlice.actions;
 
 export default shoppingOrderSlice.reducer;

@@ -23,6 +23,7 @@ function PaypalReturnPage() {
       dispatch(capturePayment({ paymentId, payerId, orderId })).then((data) => {
         if (data?.payload?.success) {
           sessionStorage.removeItem("currentOrderId");
+          sessionStorage.removeItem("paymentInProgress"); // Clear payment progress flag
           window.location.href = "/shop/payment-success";
         }
       });
