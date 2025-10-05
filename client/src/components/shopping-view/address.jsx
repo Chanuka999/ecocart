@@ -8,7 +8,7 @@ import {
   deleteAddress,
   editAddress,
   fetchAllAddress,
-} from "../../../store/shop/address-slice";
+} from "../../../store/shop/address-slice/index.js";
 import AddressCard from "./address-card";
 import { useToast } from "../ui/use-toast";
 
@@ -106,10 +106,14 @@ function Address({ setCurrentSelectedAddress, selectedId }) {
   }
 
   useEffect(() => {
-    dispatch(fetchAllAddress(user?.id));
-  }, [dispatch]);
+    console.log("Loading addresses for user:", user?.id);
+    if (user?.id) {
+      dispatch(fetchAllAddress(user?.id));
+    }
+  }, [dispatch, user?.id]);
 
-  console.log(addressList, "addressList");
+  console.log("addressList:", addressList);
+  console.log("selectedId:", selectedId);
 
   return (
     <Card>
