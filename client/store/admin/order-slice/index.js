@@ -4,41 +4,78 @@ import axios from "axios";
 const initialState = {
   orderList: [],
   orderDetails: null,
+  isLoading: false,
 };
 
 export const getAllOrdersForAdmin = createAsyncThunk(
   "/order/getAllOrdersForAdmin",
-  async () => {
-    const response = await axios.get(
-      `http://localhost:5000/api/admin/orders/get`
-    );
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:5000/api/admin/orders/get`
+      );
 
-    return response.data;
+      return response.data;
+    } catch (error) {
+      console.error("Admin: Error fetching orders:", error);
+      return rejectWithValue({
+        message:
+          error.response?.data?.message ||
+          error.message ||
+          "Failed to fetch orders",
+        status: error.response?.status,
+        data: error.response?.data,
+      });
+    }
   }
 );
 
 export const getOrderDetailsForAdmin = createAsyncThunk(
   "/order/getOrderDetailsForAdmin",
-  async (id) => {
-    const response = await axios.get(
-      `http://localhost:5000/api/admin/orders/details/${id}`
-    );
+  async (id, { rejectWithValue }) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:5000/api/admin/orders/details/${id}`
+      );
 
-    return response.data;
+      return response.data;
+    } catch (error) {
+      console.error("Admin: Error fetching order details:", error);
+      return rejectWithValue({
+        message:
+          error.response?.data?.message ||
+          error.message ||
+          "Failed to fetch order details",
+        status: error.response?.status,
+        data: error.response?.data,
+      });
+    }
   }
 );
 
 export const updateOrderStatus = createAsyncThunk(
   "/order/updateOrderStatus",
-  async ({ id, orderStatus }) => {
-    const response = await axios.put(
-      `http://localhost:5000/api/admin/orders/update/${id}`,
-      {
-        orderStatus,
-      }
-    );
+  async ({ id, orderStatus }, { rejectWithValue }) => {
+    try {
+      const response = await axios.put(
+        `http://localhost:5000/api/admin/orders/update/${id}`,
+        {
+          orderStatus,
+        }
+      );
 
-    return response.data;
+      return response.data;
+    } catch (error) {
+      console.error("Admin: Error updating order status:", error);
+      return rejectWithValue({
+        message:
+          error.response?.data?.message ||
+          error.message ||
+          "Failed to update order status",
+        status: error.response?.status,
+        data: error.response?.data,
+      });
+    }
   }
 );
 

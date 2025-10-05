@@ -38,6 +38,9 @@ const shoppingProductSlice = createSlice({
   name: "shoppingProducts",
   initialState,
   reducers: {
+    setProductDetails: (state, action) => {
+      state.productDetails = action.payload;
+    },
     clearProductDetails: (state) => {
       state.productDetails = null;
     },
@@ -71,6 +74,7 @@ const shoppingProductSlice = createSlice({
   },
 });
 
-export const { setProductDetails } = shoppingProductSlice.actions;
+export const { setProductDetails, clearProductDetails } =
+  shoppingProductSlice.actions;
 
 export default shoppingProductSlice.reducer;

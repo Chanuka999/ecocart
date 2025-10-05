@@ -14,11 +14,13 @@ import "./models/Order.js";
 
 import authRouter from "./routes/auth/auth-routes.js";
 import adminProductsRouter from "./routes/admin/products-route.js";
+import adminOrderRouter from "./routes/admin/order-routes.js";
 import shopProductRouter from "./routes/shop/products-routes.js";
 import shopCartRouter from "./routes/shop/cart-routes.js";
 import shopReviewRouter from "./routes/shop/review-routes.js";
 import shopAddressRouter from "./routes/shop/address-routes.js";
 import shopOrderRouter from "./routes/shop/order-routes.js";
+import paypalTestRouter from "./routes/test/paypal-test.js";
 
 dotenv.config();
 
@@ -79,10 +81,12 @@ app.use(cookieParser());
 app.use(express.json());
 app.use("/api/auth", authRouter);
 app.use("/api/admin/products", adminProductsRouter);
+app.use("/api/admin/orders", adminOrderRouter);
 app.use("/api/shop/products", shopProductRouter);
 app.use("/api/shop/cart", shopCartRouter);
 app.use("/api/shop/review", shopReviewRouter);
 app.use("/api/shop/address", shopAddressRouter);
 app.use("/api/shop/order", shopOrderRouter);
+app.use("/api/test", paypalTestRouter);
 
 app.listen(PORT, () => console.log(`server is running on port ${PORT}`));
