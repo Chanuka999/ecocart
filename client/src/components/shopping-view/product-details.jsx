@@ -7,7 +7,7 @@ import { Input } from "../ui/input";
 import { useDispatch, useSelector } from "react-redux";
 import { addToCart, fetchToCart } from "../../../store/shop/cart-slice";
 import { useToast } from "../ui/use-toast";
-import { setProductDetails } from "../../../store/shop/product-slice/index.js";
+import { clearProductDetails } from "../../../store/shop/product-slice/index.js";
 import { Label } from "../ui/label";
 import StarRatingComponent from "../common/star-rating";
 import { useEffect, useState } from "react";
@@ -66,7 +66,7 @@ function ProductDetailsDialog({ open, setOpen, productDetails }) {
 
   function handleDialogClose() {
     setOpen(false);
-    dispatch(setProductDetails());
+    dispatch(clearProductDetails());
     setRating(0);
     setReviewMsg("");
   }
@@ -93,10 +93,14 @@ function ProductDetailsDialog({ open, setOpen, productDetails }) {
   }
 
   useEffect(() => {
-    if (productDetails !== null) dispatch(getReviews(productDetails?._id));
+    if (productDetails !== null) {
+      console.log("Loading reviews for product:", productDetails?._id);
+      dispatch(getReviews(productDetails?._id));
+    }
   }, [productDetails, dispatch]);
 
-  console.log(reviews, "reviews");
+  console.log("Reviews data:", reviews);
+  console.log("Product details:", productDetails);
 
   const averageReview =
     reviews && reviews.length > 0
@@ -174,7 +178,7 @@ function ProductDetailsDialog({ open, setOpen, productDetails }) {
             <div className="grid gap-6">
               {reviews && reviews.length > 0 ? (
                 reviews.map((reviewItem) => (
-                  <div className="flex gap-4">
+                  <div key={reviewItem._id} className="flex gap-4">
                     <Avatar className="w-10 h-10 border">
                       <AvatarFallback>
                         {reviewItem?.userName[0].toUpperCase()}
