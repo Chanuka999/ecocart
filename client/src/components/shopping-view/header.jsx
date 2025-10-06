@@ -21,7 +21,7 @@ import { Avatar, AvatarFallback } from "../ui/avatar";
 import { logoutUser } from "../../../store/auth-slice";
 import UserCartWrapper from "./cart-wrapper";
 import { useEffect, useState } from "react";
-import { fetchToCart } from "../../../store/shop/cart-slice";
+import { fetchCartItems } from "../../../store/shop/cart-slice";
 import { Label } from "../ui/label";
 
 function MenuItems() {
@@ -77,7 +77,7 @@ function HeaderRightContent() {
 
   useEffect(() => {
     if (user?.id) {
-      dispatch(fetchToCart(user?.id));
+      dispatch(fetchCartItems(user?.id));
     }
   }, [dispatch, user?.id]);
 
