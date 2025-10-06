@@ -21,12 +21,12 @@ import { Card, CardContent } from "../../components/ui/card";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  fetchAllFilterdProducts,
+  fetchAllFilteredProducts,
   fetchProductDetails,
 } from "../../../store/shop/product-slice/index.js";
 import ShoppingProductTile from "../../components/shopping-view/product-tile";
 import { useNavigate } from "react-router-dom";
-import { addToCart, fetchToCart } from "../../../store/shop/cart-slice";
+import { addToCart, fetchCartItems } from "../../../store/shop/cart-slice";
 import { useToast } from "../../components/ui/use-toast";
 import ProductDetailsDialog from "../../components/shopping-view/product-details";
 //import { getFeatureImages } from "../../../store/common-slice";
@@ -86,7 +86,7 @@ function ShoppingHome() {
       })
     ).then((data) => {
       if (data?.payload?.success) {
-        dispatch(fetchToCart(user?.id));
+        dispatch(fetchCartItems(user?.id));
         toast({
           title: "Product is added to cart",
         });
@@ -108,7 +108,7 @@ function ShoppingHome() {
 
   useEffect(() => {
     dispatch(
-      fetchAllFilterdProducts({
+      fetchAllFilteredProducts({
         filterParams: {},
         sortParams: "price-lowtohigh",
       })
