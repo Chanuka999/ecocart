@@ -22,8 +22,8 @@ export const addToCart = createAsyncThunk(
   }
 );
 
-export const fetchToCart = createAsyncThunk(
-  "cart/fetchTOCart",
+export const fetchCartItems = createAsyncThunk(
+  "cart/fetchCartItems",
   async (userId) => {
     const responce = await axios.get(
       `http://localhost:5000/api/shop/cart/get/${userId}`
@@ -77,14 +77,14 @@ const shoppingCartSlice = createSlice({
         state.isLoading = false;
         state.cartItems = [];
       })
-      .addCase(fetchToCart.pending, (state) => {
+      .addCase(fetchCartItems.pending, (state) => {
         state.isLoading = true;
       })
-      .addCase(fetchToCart.fulfilled, (state, action) => {
+      .addCase(fetchCartItems.fulfilled, (state, action) => {
         state.isLoading = false;
         state.cartItems = action.payload.data;
       })
-      .addCase(fetchToCart.rejected, (state) => {
+      .addCase(fetchCartItems.rejected, (state) => {
         state.isLoading = false;
         state.cartItems = [];
       })
