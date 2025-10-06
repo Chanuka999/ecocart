@@ -1,3 +1,7 @@
+import ProductFilter from "../../components/shopping-view/filter";
+import ProductDetailsDialog from "../../components/shopping-view/product-details";
+import ShoppingProductTile from "../../components/shopping-view/product-tile";
+import { Button } from "../../components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -5,20 +9,22 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
 } from "../../components/ui/dropdown-menu";
-import ProductFilter from "../../components/shopping-view/filter";
-import React, { useEffect, useState } from "react";
-import { Button } from "../../components/ui/button";
-import { ArrowUpDownIcon, FileChartColumnIncreasing } from "lucide-react";
+import { useToast } from "../../components/ui/use-toast";
 import { sortOptions } from "../../config";
+import {
+  addToCart,
+  fetchCartItems,
+} from "../../../store/shop/cart-slice/index.js";
+import {
+  fetchAllFilteredProducts,
+  fetchProductDetails,
+} from "../../../store/shop/product-slice/index.js";
+import { ArrowUpDownIcon } from "lucide-react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchAllFilterdProducts } from "../../../store/shop/product-slice";
-import ShoppingProductTile from "../../components/shopping-view/product-tile";
-import { createSearchParams, useSearchParams } from "react-router-dom";
-import { fetchProductDetails } from "../../../store/shopping-slice";
-import ProductDetailsDialog from "../../components/shopping-view/product-details";
-import { addToCart, fetchToCart } from "../../../store/shop/cart-slice";
+import { useSearchParams } from "react-router-dom";
 
-const createSearchParamsHelper = (filterParams) => {
+function createSearchParamsHelper(filterParams) {
   const queryParams = [];
 
   for (const [key, value] of Object.entries(filterParams)) {
@@ -28,56 +34,79 @@ const createSearchParamsHelper = (filterParams) => {
       queryParams.push(`${key}=${encodeURIComponent(paramValue)}`);
     }
   }
-  return queryParams.join("&");
-};
 
-const ShoppingListing = () => {
+  console.log(queryParams, "queryParams");
+
+  return queryParams.join("&");
+}
+
+function ShoppingListing() {
   const dispatch = useDispatch();
-  const [filter, setFilter] = useState({});
-  const [sort, setSort] = useState(null);
-  const [searchParams, setSearchParams] = useSearchParams();
   const { productList, productDetails } = useSelector(
     (state) => state.shopProducts
   );
-
+  const { cartItems } = useSelector((state) => state.shopCart);
   const { user } = useSelector((state) => state.auth);
-  const [openDetailsDialog, setOpenDetailsDialog] = useState(
-    FileChartColumnIncreasing
-  );
+  const [filters, setFilters] = useState({});
+  const [sort, setSort] = useState(null);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [openDetailsDialog, setOpenDetailsDialog] = useState(false);
+  const { toast } = useToast();
 
-  const handleSort = (value) => {
+  const categorySearchParam = searchParams.get("category");
+
+  function handleSort(value) {
     setSort(value);
-  };
+  }
 
-  const handleFilter = (getSectionId, getCurrentOption) => {
-    let copyFilters = { ...filter };
-    const indexOfCurrentSection =
-      Object.keys(copyFilters).indexOf(getSectionId);
+  function handleFilter(getSectionId, getCurrentOption) {
+    let cpyFilters = { ...filters };
+    const indexOfCurrentSection = Object.keys(cpyFilters).indexOf(getSectionId);
 
     if (indexOfCurrentSection === -1) {
-      copyFilters = {
-        ...copyFilters,
+      cpyFilters = {
+        ...cpyFilters,
         [getSectionId]: [getCurrentOption],
       };
     } else {
       const indexOfCurrentOption =
-        copyFilters[getSectionId].indexOf(getCurrentOption);
+        cpyFilters[getSectionId].indexOf(getCurrentOption);
 
       if (indexOfCurrentOption === -1)
-        copyFilters[getSectionId].push(getCurrentOption);
-      else copyFilters[getSectionId].splice(indexOfCurrentOption, 1);
+        cpyFilters[getSectionId].push(getCurrentOption);
+      else cpyFilters[getSectionId].splice(indexOfCurrentOption, 1);
     }
 
-    setFilter(copyFilters);
-    sessionStorage.setItem("filters", JSON.stringify(copyFilters));
-  };
+    setFilters(cpyFilters);
+    sessionStorage.setItem("filters", JSON.stringify(cpyFilters));
+  }
 
-  const handleGetProductDetails = (getCurrentProductId) => {
+  function handleGetProductDetails(getCurrentProductId) {
     console.log(getCurrentProductId);
     dispatch(fetchProductDetails(getCurrentProductId));
-  };
+  }
 
-  const handleAddtoCart = (getCurrentProductId) => {
+  function handleAddtoCart(getCurrentProductId, getTotalStock) {
+    console.log(cartItems);
+    let getCartItems = cartItems.items || [];
+
+    if (getCartItems.length) {
+      const indexOfCurrentItem = getCartItems.findIndex(
+        (item) => item.productId === getCurrentProductId
+      );
+      if (indexOfCurrentItem > -1) {
+        const getQuantity = getCartItems[indexOfCurrentItem].quantity;
+        if (getQuantity + 1 > getTotalStock) {
+          toast({
+            title: `Only ${getQuantity} quantity can be added for this item`,
+            variant: "destructive",
+          });
+
+          return;
+        }
+      }
+    }
+
     dispatch(
       addToCart({
         userId: user?.id,
@@ -86,40 +115,45 @@ const ShoppingListing = () => {
       })
     ).then((data) => {
       if (data?.payload?.success) {
-        dispatch(fetchToCart(user?.id));
+        dispatch(fetchCartItems(user?.id));
+        toast({
+          title: "Product is added to cart",
+        });
       }
     });
-  };
+  }
 
   useEffect(() => {
     setSort("price-lowtohigh");
-    setFilter(JSON.parse(sessionStorage.getItem("filters")) || {});
-  }, []);
+    setFilters(JSON.parse(sessionStorage.getItem("filters")) || {});
+  }, [categorySearchParam]);
 
   useEffect(() => {
-    if (filter && Object.keys(filter).length > 0) {
-      const createQueryString = createSearchParams(filter);
+    if (filters && Object.keys(filters).length > 0) {
+      const createQueryString = createSearchParamsHelper(filters);
       setSearchParams(new URLSearchParams(createQueryString));
     }
-  }, [filter]);
+  }, [filters, setSearchParams]);
 
   useEffect(() => {
-    if (filter !== null && sort !== null)
+    if (filters !== null && sort !== null)
       dispatch(
-        fetchAllFilterdProducts({ filterParams: filter, sortParams: sort })
+        fetchAllFilteredProducts({ filterParams: filters, sortParams: sort })
       );
-  }, [dispatch, sort, filter]);
+  }, [dispatch, sort, filters]);
 
   useEffect(() => {
     if (productDetails !== null) setOpenDetailsDialog(true);
   }, [productDetails]);
 
+  console.log(productList, "productListproductListproductList");
+
   return (
-    <div className="grid grid-cols-1 md:grid-cols-[200px_1fr] sm:grid-cols-[150px_1fr] gap-6 p-4 md:p-6">
-      <ProductFilter filter={filter} handleFilter={handleFilter} />
+    <div className="grid grid-cols-1 md:grid-cols-[200px_1fr] gap-6 p-4 md:p-6">
+      <ProductFilter filters={filters} handleFilter={handleFilter} />
       <div className="bg-background w-full rounded-lg shadow-sm">
         <div className="p-4 border-b flex items-center justify-between">
-          <h2 className="text-lg font-extrabold">All products</h2>
+          <h2 className="text-lg font-extrabold">All Products</h2>
           <div className="flex items-center gap-3">
             <span className="text-muted-foreground">
               {productList?.length} Products
@@ -150,7 +184,7 @@ const ShoppingListing = () => {
             </DropdownMenu>
           </div>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid=colos-3 lg:grid-cols-4 gap-4 p-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4">
           {productList && productList.length > 0
             ? productList.map((productItem) => (
                 <ShoppingProductTile
@@ -169,6 +203,6 @@ const ShoppingListing = () => {
       />
     </div>
   );
-};
+}
 
 export default ShoppingListing;
