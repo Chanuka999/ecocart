@@ -18,6 +18,7 @@ import { useSearchParams } from "react-router-dom";
 function SearchProducts() {
   const [keyword, setKeyword] = useState("");
   const [openDetailsDialog, setOpenDetailsDialog] = useState(false);
+  const [showSuggestions, setShowSuggestions] = useState(false);
   const [_searchParams, setSearchParams] = useSearchParams();
   const dispatch = useDispatch();
   const { searchResults } = useSelector((state) => state.shopSearch);
@@ -29,15 +30,20 @@ function SearchProducts() {
   const { toast } = useToast();
   useEffect(() => {
     // searchParams is intentionally unused here but returned by the hook; keep for future needs
-    if (keyword && keyword.trim() !== "" && keyword.trim().length > 3) {
+    const trimmedKeyword = keyword?.trim();
+    if (trimmedKeyword && trimmedKeyword.length >= 3) {
       const timer = setTimeout(() => {
-        setSearchParams(new URLSearchParams(`?keyword=${keyword}`));
-        dispatch(getSearchResults(keyword));
+        setSearchParams(new URLSearchParams(`?keyword=${trimmedKeyword}`));
+        dispatch(getSearchResults(trimmedKeyword));
+        setShowSuggestions(true);
       }, 1000);
 
       return () => clearTimeout(timer);
     } else {
-      setSearchParams(new URLSearchParams(`?keyword=${keyword}`));
+      if (!keyword || keyword.trim() === "") {
+        setSearchParams(new URLSearchParams(`?keyword=${keyword}`));
+      }
+      setShowSuggestions(false);
       dispatch(resetSearchResults());
     }
   }, [keyword, dispatch, setSearchParams]);
@@ -84,6 +90,18 @@ function SearchProducts() {
     dispatch(fetchProductDetails(getCurrentProductId));
   }
 
+  function handleSuggestionClick(item) {
+    // Set input to selected title, hide suggestions and open details
+    setKeyword(item.title || "");
+    setShowSuggestions(false);
+    // update search param
+    setSearchParams(
+      new URLSearchParams(`?keyword=${encodeURIComponent(item.title)}`)
+    );
+    // open details
+    handleGetProductDetails(item._id || item.id);
+  }
+
   useEffect(() => {
     if (productDetails !== null) setOpenDetailsDialog(true);
   }, [productDetails]);
@@ -93,14 +111,37 @@ function SearchProducts() {
   return (
     <div className="container mx-auto md:px-6 px-4 py-8">
       <div className="flex justify-center mb-8">
-        <div className="w-full flex items-center">
+        <div className="w-full flex items-center relative">
           <Input
             value={keyword}
             name="keyword"
             onChange={(event) => setKeyword(event.target.value)}
             className="py-6"
             placeholder="Search Products..."
+            onFocus={() => {
+              if (searchResults && searchResults.length > 0)
+                setShowSuggestions(true);
+            }}
+            onBlur={() => {
+              // delay hiding to allow click
+              setTimeout(() => setShowSuggestions(false), 150);
+            }}
           />
+
+          {showSuggestions && searchResults && searchResults.length > 0 ? (
+            <ul className="absolute z-40 top-full left-0 right-0 bg-white border rounded-md shadow-md max-h-60 overflow-auto mt-1">
+              {searchResults.map((item) => (
+                <li
+                  key={item._id || item.id}
+                  className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                  onMouseDown={(e) => e.preventDefault()} /* prevent blur */
+                  onClick={() => handleSuggestionClick(item)}
+                >
+                  {item.title}
+                </li>
+              ))}
+            </ul>
+          ) : null}
         </div>
       </div>
       {!searchResults.length ? (
@@ -109,6 +150,7 @@ function SearchProducts() {
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
         {searchResults.map((item) => (
           <ShoppingProductTile
+            key={item._id || item.id}
             handleAddtoCart={handleAddtoCart}
             product={item}
             handleGetProductDetails={handleGetProductDetails}
