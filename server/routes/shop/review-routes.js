@@ -2,7 +2,7 @@ import express from "express";
 import {
   addProductReview,
   getProductReviews,
-} from "../../controllers/shop/review-controller.js";
+} from "../../controllers/shop/product-review-controller.js";
 
 const router = express.Router();
 
