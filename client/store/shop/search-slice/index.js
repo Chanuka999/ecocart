@@ -9,8 +9,9 @@ const initialState = {
 export const getSearchResults = createAsyncThunk(
   "/order/getSearchResults",
   async (keyword) => {
+    const encoded = encodeURIComponent(keyword);
     const response = await axios.get(
-      `http://localhost:5000/api/shop/search/${keyword}`
+      `http://localhost:5000/api/shop/search/${encoded}`
     );
 
     return response.data;
