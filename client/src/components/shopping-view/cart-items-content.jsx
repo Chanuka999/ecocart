@@ -3,6 +3,7 @@ import { Button } from "../ui/button";
 import { useDispatch, useSelector } from "react-redux";
 import { DeleteCartItem, updateCartItem } from "../../../store/shop/cart-slice";
 import { useToast } from "../ui/use-toast";
+import defaultImg from "../../assets/account.jpg";
 
 function UserCartItemsContent({ cartItem }) {
   const { user } = useSelector((state) => state.auth);
@@ -73,11 +74,32 @@ function UserCartItemsContent({ cartItem }) {
 
   return (
     <div className="flex items-center space-x-4">
-      <img
-        src={cartItem?.image}
-        alt={cartItem?.title}
-        className="w-20 h-20 rounded object-cover"
-      />
+      {(() => {
+        // handle a few possible shapes for the image value
+        const rawImage = cartItem?.image;
+        let imageSrc = null;
+
+        if (!rawImage) imageSrc = defaultImg;
+        else if (typeof rawImage === "string") imageSrc = rawImage;
+        else if (typeof rawImage === "object")
+          imageSrc =
+            rawImage?.url ||
+            rawImage?.secure_url ||
+            rawImage?.path ||
+            defaultImg;
+        else imageSrc = defaultImg;
+
+        return (
+          <img
+            src={imageSrc}
+            alt={cartItem?.title || "product image"}
+            className="w-20 h-20 rounded object-cover"
+            onError={(e) => {
+              e.currentTarget.src = defaultImg;
+            }}
+          />
+        );
+      })()}
       <div className="flex-1">
         <h3 className="font-extrabold">{cartItem?.title}</h3>
         <div className="flex items-center gap-2 mt-1">
