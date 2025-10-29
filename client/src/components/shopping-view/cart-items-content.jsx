@@ -75,19 +75,56 @@ function UserCartItemsContent({ cartItem }) {
   return (
     <div className="flex items-center space-x-4">
       {(() => {
-        // handle a few possible shapes for the image value
+        // Handle a variety of shapes for the image value and normalize to a usable src string.
+        // Supported shapes: string URL, relative path, object { url, secure_url, path },
+        // array of those, or single-file strings inside arrays.
         const rawImage = cartItem?.image;
         let imageSrc = null;
 
-        if (!rawImage) imageSrc = defaultImg;
-        else if (typeof rawImage === "string") imageSrc = rawImage;
-        else if (typeof rawImage === "object")
+        const normalizeString = (str) => {
+          if (!str) return null;
+          // If it's a relative path (starts with / or doesn't contain http), prepend origin
+          try {
+            const trimmed = String(str).trim();
+            if (/^https?:\/\//i.test(trimmed)) return trimmed;
+            if (trimmed.startsWith("/"))
+              return window.location.origin + trimmed;
+            // If it's a simple filename or relative path without leading slash, also prepend origin
+            if (!trimmed.includes("://"))
+              return window.location.origin + "/" + trimmed;
+            return trimmed;
+          } catch {
+            return null;
+          }
+        };
+
+        if (!rawImage) {
+          imageSrc = defaultImg;
+        } else if (typeof rawImage === "string") {
+          imageSrc = normalizeString(rawImage) || defaultImg;
+        } else if (Array.isArray(rawImage)) {
+          // Try first element as string or object
+          const first = rawImage[0];
+          if (typeof first === "string")
+            imageSrc = normalizeString(first) || defaultImg;
+          else if (typeof first === "object")
+            imageSrc =
+              normalizeString(first?.url) ||
+              normalizeString(first?.secure_url) ||
+              normalizeString(first?.path) ||
+              normalizeString(first?.src) ||
+              defaultImg;
+          else imageSrc = defaultImg;
+        } else if (typeof rawImage === "object") {
           imageSrc =
-            rawImage?.url ||
-            rawImage?.secure_url ||
-            rawImage?.path ||
+            normalizeString(rawImage?.url) ||
+            normalizeString(rawImage?.secure_url) ||
+            normalizeString(rawImage?.path) ||
+            normalizeString(rawImage?.src) ||
             defaultImg;
-        else imageSrc = defaultImg;
+        } else {
+          imageSrc = defaultImg;
+        }
 
         return (
           <img

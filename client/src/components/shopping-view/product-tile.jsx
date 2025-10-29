@@ -2,6 +2,8 @@ import { Card, CardContent, CardFooter } from "../ui/card";
 import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
 import { brandOptionsMap, categoryOptionsMap } from "../../config";
+import { normalizeImageSrc } from "../../lib/utils";
+import defaultImg from "../../assets/account.jpg";
 
 function ShoppingProductTile({
   product,
@@ -13,9 +15,13 @@ function ShoppingProductTile({
       <div onClick={() => handleGetProductDetails(product?._id)}>
         <div className="relative">
           <img
-            src={product?.image}
+            src={normalizeImageSrc(product?.image) || defaultImg}
             alt={product?.title}
             className="w-full h-[300px] object-cover rounded-t-lg"
+            onError={(e) => {
+              // fallback to bundled default image if remote/relative fails
+              e.currentTarget.src = defaultImg;
+            }}
           />
           {product?.salePrice > 0 ? (
             <Badge className="absolute top-2 left-2 bg-red-500 hover:bg-red-600">
